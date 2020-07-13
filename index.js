@@ -39,6 +39,9 @@ function getParks(query, maxResults = 10) {
 function displayResults(responseJson) {
   // if there are previous results, remove them
   $('#results-list').empty();
+  if(responseJson.data.length <= 0) {
+    $('#results-list').append('No results found. Check input and try again.');
+  }
   // iterate through the data array
   for (let i = 0; i < responseJson.data.length; i++){
     //Display Park info:
@@ -49,9 +52,21 @@ function displayResults(responseJson) {
     $('#results-list').append(
       `<li><h3>${responseJson.data[i].fullName}</h3>
       <p>${responseJson.data[i].description}</p>
-      <a href='${responseJson.data[i].url}'>Park Website</a>
-      </li>`
-    )};
+      <a href='${responseJson.data[i].url}'>Park Website</a>`
+    );
+    responseJson.data[i].addresses.forEach(element => {
+      if(element.type === 'Physical') {
+        $('#results-list').append(`
+          <p>Address:<br>
+          ${element.line1},<br>
+          ${element.line2 !== '' ? element.line2 + ',<br>': ''}
+          ${element.line3 !== '' ? element.line3 + ',<br>': ''}
+          ${element.city}, ${element.stateCode} ${element.postalCode}</p>`
+        );
+      }
+    });
+    $('#results-list').append('</li>');
+  }
   //display the results section  
   $('#results').removeClass('hidden');
 };
